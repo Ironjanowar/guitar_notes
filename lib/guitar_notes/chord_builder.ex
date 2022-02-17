@@ -8,6 +8,27 @@ defmodule GuitarNotes.ChordBuilder do
     end
   end
 
+  def calculate_interval(note, steps) when is_atom(note) and is_number(steps) do
+    with {:ok, number} <- note_to_number(note) do
+      steps = mod_of_number(steps)
+      # Sum 12 so we can have negative intervals
+      number = 12 + number + steps
+      new_number = rem(number, 12)
+      number_to_note(new_number)
+    end
+  end
+
+  def get_notes_from(note, n \\ 12) do
+    {:ok, start_note} = note_to_number(note)
+    end_note = start_note + n
+
+    Enum.map(start_note..end_note, fn number ->
+      {:ok, note} = number |> mod_of_number() |> number_to_note()
+      note
+    end)
+  end
+
+  # Private
   defp build_interval({type, modifier}, chord) do
     with {:ok, interval_number} <- get_interval(type, modifier),
          {:ok, interval_note} <- calculate_interval(chord.tonic, interval_number) do
@@ -28,16 +49,6 @@ defmodule GuitarNotes.ChordBuilder do
 
   defp get_interval(type, modifier),
     do: {:error, "Unknown interval #{inspect(type)} #{inspect(modifier)}"}
-
-  def calculate_interval(note, steps) when is_atom(note) and is_number(steps) do
-    with {:ok, number} <- note_to_number(note) do
-      steps = mod_of_number(steps)
-      # Sum 12 so we can have negative intervals
-      number = 12 + number + steps
-      new_number = rem(number, 12)
-      number_to_note(new_number)
-    end
-  end
 
   @numbers_to_notes %{
     0 => :c,

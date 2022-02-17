@@ -1,0 +1,5 @@
+<div class="fretboard">
+  <%= for config <- @configs do %>
+    <.live_component module={StringComponent} id={config.id} note={config.note}/>
+  <% end %>
+</div>

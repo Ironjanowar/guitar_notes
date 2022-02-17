@@ -71,7 +71,7 @@ body {
     background: teal;
     z-index: 2;
     color: #eee;
-    opacity: 0.2;
+    opacity: 0;
 }
 
 .single-fretmark:after {

@@ -36,4 +36,18 @@ defmodule GuitarNotes.ChordBuilderTest do
     assert {:ok, :b} = Builder.calculate_interval(:c, -13)
     assert {:ok, :a} = Builder.calculate_interval(:c, -15)
   end
+
+  test "get_notes_from/2" do
+    assert Builder.get_notes_from(:c, 3) == [:c, :cs, :d, :ds]
+    assert Builder.get_notes_from(:a, 3) == [:a, :as, :b, :c]
+
+    notes = [:c, :cs, :d, :ds, :e, :f, :fs, :g, :gs, :a, :as, :b]
+    assert Builder.get_notes_from(:c, 11) == notes
+
+    notes = [:c, :cs, :d, :ds, :e, :f, :fs, :g, :gs, :a, :as, :b, :c]
+    assert Builder.get_notes_from(:c, 12) == notes
+
+    notes = [:a, :as, :b, :c, :cs, :d, :ds, :e, :f, :fs, :g, :gs, :a]
+    assert Builder.get_notes_from(:a, 12) == notes
+  end
 end
