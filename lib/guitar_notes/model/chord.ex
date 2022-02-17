@@ -36,4 +36,8 @@ defmodule GuitarNotes.Model.Chord do
     |> Changeset.validate_required(required)
     |> Changeset.apply_action(:insert)
   end
+
+  def notes(%__MODULE__{} = chord) do
+    Enum.reject([chord.tonic, chord.third, chord.fifth], &is_nil/1)
+  end
 end

@@ -61,8 +61,8 @@ body {
     border-image: linear-gradient(to left, #bbb, #fff, #bbb) 1 100%;
 }
 
-.note-fret:before {
-    content: 'C';
+.note {
+    content: attr(data-note);
     width: 33px;
     height: 33px;
     border-radius: 50%;
@@ -71,7 +71,6 @@ body {
     background: teal;
     z-index: 2;
     color: #eee;
-    opacity: 0;
 }
 
 .single-fretmark:after {
