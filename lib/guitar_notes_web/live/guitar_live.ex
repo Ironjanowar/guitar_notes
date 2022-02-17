@@ -16,7 +16,7 @@ defmodule GuitarNotesWeb.GuitarLive do
       %{note: :e, id: Ecto.UUID.generate()}
     ]
 
-    {:ok, chord} = Builder.build(:c, third: :maj, fifth: :perfect)
+    {:ok, chord} = Builder.build(:c, third: :min, fifth: :perfect)
     chord_notes = Chord.notes(chord)
 
     {:ok, assign(socket, configs: configs, chord_notes: chord_notes)}

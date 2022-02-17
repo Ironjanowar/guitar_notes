@@ -2,6 +2,7 @@ defmodule GuitarNotesWeb.Components.StringComponent do
   use Phoenix.LiveComponent
 
   alias GuitarNotes.ChordBuilder
+  alias GuitarNotes.Model.Chord
 
   def render(assigns) do
     start_note = assigns.note
@@ -21,7 +22,7 @@ defmodule GuitarNotesWeb.Components.StringComponent do
     <div class="string">
       <%= for fret <- @frets do %>
         <div class={fret.type}>
-          <div class="note" hidden={not fret.show}><%= fret.note %></div>
+          <div class="note" hidden={not fret.show}><%= Chord.pretty(fret.note) %></div>
         </div>
       <% end %>
     </div>
