@@ -28,7 +28,24 @@ defmodule GuitarNotes.ChordBuilder do
     end)
   end
 
+  def get_intervals(%Chord{} = chord) do
+    third = maybe_interval(chord.tonic, chord.third)
+    fifth = maybe_interval(chord.tonic, chord.fifth)
+
+    Enum.reject([third, fifth], &is_nil/1)
+  end
+
+  def interval(note1, note2) when is_atom(note1) and is_atom(note2) do
+    {:ok, number1} = note_to_number(note1)
+    {:ok, number2} = note_to_number(note2)
+
+    abs(number1 - number2) |> get_interval_notation()
+  end
+
   # Private
+  defp maybe_interval(_, nil), do: nil
+  defp maybe_interval(tonic, note), do: interval(tonic, note)
+
   defp build_interval({type, modifier}, chord) do
     with {:ok, interval_number} <- get_interval(type, modifier),
          {:ok, interval_note} <- calculate_interval(chord.tonic, interval_number) do
@@ -41,14 +58,20 @@ defmodule GuitarNotes.ChordBuilder do
   defp build_interval(interval, _), do: {:halt, {:error, "Unknown interval #{inspect(interval)}"}}
 
   # TODO: complete all main intervals
-  defp get_interval(:third, :maj), do: {:ok, 4}
   defp get_interval(:third, :min), do: {:ok, 3}
+  defp get_interval(:third, :maj), do: {:ok, 4}
   defp get_interval(:fifth, :diminished), do: {:ok, 6}
   defp get_interval(:fifth, :perfect), do: {:ok, 7}
   defp get_interval(:fifth, :augmented), do: {:ok, 8}
 
   defp get_interval(type, modifier),
     do: {:error, "Unknown interval #{inspect(type)} #{inspect(modifier)}"}
+
+  defp get_interval_notation(3), do: {:third, :min}
+  defp get_interval_notation(4), do: {:third, :maj}
+  defp get_interval_notation(6), do: {:fifth, :diminished}
+  defp get_interval_notation(7), do: {:fifth, :perfect}
+  defp get_interval_notation(8), do: {:fifth, :augmented}
 
   @numbers_to_notes %{
     0 => :c,

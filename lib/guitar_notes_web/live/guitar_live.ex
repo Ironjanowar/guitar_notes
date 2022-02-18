@@ -1,7 +1,7 @@
 defmodule GuitarNotesWeb.GuitarLive do
   use Phoenix.LiveView
 
-  alias GuitarNotesWeb.Components.StringComponent
+  alias GuitarNotesWeb.Components.{ChordSelectorComponent, StringComponent}
   alias GuitarNotes.ChordBuilder, as: Builder
   alias GuitarNotes.Model.Chord
 
@@ -16,7 +16,7 @@ defmodule GuitarNotesWeb.GuitarLive do
       %{note: :e, id: Ecto.UUID.generate()}
     ]
 
-    {:ok, chord} = Builder.build(:c, third: :min, fifth: :perfect)
+    {:ok, chord} = Builder.build(:e, third: :min, fifth: :perfect)
     chord_notes = Chord.notes(chord)
 
     {:ok, assign(socket, configs: configs, chord_notes: chord_notes)}

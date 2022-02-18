@@ -50,4 +50,21 @@ defmodule GuitarNotes.ChordBuilderTest do
     notes = [:a, :as, :b, :c, :cs, :d, :ds, :e, :f, :fs, :g, :gs, :a]
     assert Builder.get_notes_from(:a, 12) == notes
   end
+
+  test "interval/2" do
+    assert Builder.interval(:c, :e) == {:third, :maj}
+    assert Builder.interval(:c, :ds) == {:third, :min}
+
+    assert Builder.interval(:c, :fs) == {:fifth, :diminished}
+    assert Builder.interval(:c, :g) == {:fifth, :perfect}
+    assert Builder.interval(:c, :gs) == {:fifth, :augmented}
+  end
+
+  test "intervals/1" do
+    assert {:ok, chord} = Builder.build(:c, third: :maj)
+    assert Builder.get_intervals(chord) == [{:third, :maj}]
+
+    assert {:ok, chord} = Builder.build(:c, third: :min, fifth: :perfect)
+    assert Builder.get_intervals(chord) == [third: :min, fifth: :perfect]
+  end
 end
