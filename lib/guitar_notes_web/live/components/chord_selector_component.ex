@@ -1,5 +1,6 @@
 defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
   use Phoenix.LiveComponent
+  use Phoenix.HTML
 
   alias GuitarNotes.Model.Chord
   alias GuitarNotes.ChordBuilder, as: Builder
@@ -45,16 +46,18 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
     assigns = assign(assigns, :selections, selections)
 
     ~H"""
-    <select selected={@selected}>
-      <%= for selection <- @selections do %>
-        <option value={selection}><%= selection %></option>
-      <% end %>
-    </select>
+    <%= select :chord, :chord, @selections, selected: @selected %>
     """
   end
 
   defp selections_from_type(:third), do: ["maj", "min"]
   defp selections_from_type(:fifth), do: ["diminished", "perfect", "augmented"]
+
+  # <select selected={@selected}>
+  #   <%= for selection <- @selections do %>
+  #     <option value={selection}><%= selection %></option>
+  #   <% end %>
+  # </select>
 
   #   <label>Third</label>
   # <select class="col-6">
