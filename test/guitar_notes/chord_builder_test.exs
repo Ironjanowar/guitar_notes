@@ -11,10 +11,18 @@ defmodule GuitarNotes.ChordBuilderTest do
     assert {:ok, %Chord{tonic: :c, fifth: :g}} = Builder.build(:c, fifth: :perfect)
     assert {:ok, %Chord{tonic: :c, fifth: :gs}} = Builder.build(:c, fifth: :augmented)
 
+    assert {:ok, %Chord{tonic: :c, fifth: :gs}} = Builder.build(:c, %{"fifth" => "augmented"})
+
     intervals = [third: :maj, fifth: :perfect]
     assert {:ok, %Chord{tonic: :c, third: :e, fifth: :g}} = Builder.build(:c, intervals)
 
     assert {:error, "Unknown interval :unknown :interval"} = Builder.build(:c, unknown: :interval)
+
+    assert {:ok, chord} = Chord.new(tonic: :c)
+    assert {:ok, %Chord{tonic: :c, third: :e}} = Builder.build(chord, third: :maj)
+
+    assert {:ok, chord} = Builder.build(:a, third: :min, fifth: :perfect)
+    assert %Chord{tonic: :a, third: :c, fifth: :e} = chord
   end
 
   test "calculate_interval/2" do
@@ -66,5 +74,11 @@ defmodule GuitarNotes.ChordBuilderTest do
 
     assert {:ok, chord} = Builder.build(:c, third: :min, fifth: :perfect)
     assert Builder.get_intervals(chord) == [third: :min, fifth: :perfect]
+
+    assert {:ok, chord} = Builder.build(:a, third: :min, fifth: :perfect)
+    assert Builder.get_intervals(chord) == [third: :min, fifth: :perfect]
+
+    assert {:ok, chord} = Builder.build(:e, third: :min, fifth: :augmented)
+    assert Builder.get_intervals(chord) == [third: :min, fifth: :augmented]
   end
 end

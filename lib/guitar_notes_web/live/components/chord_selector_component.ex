@@ -6,36 +6,36 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
   alias GuitarNotes.ChordBuilder, as: Builder
 
   def render(assigns) do
-    assigns = assign_new(assigns, :chords, fn -> [default_chord()] end)
+    changesets = Map.new(assigns.chords, fn {tonic, chord} -> {tonic, changeset(chord)} end)
+    assigns = assign(assigns, :changesets, changesets)
 
     ~H"""
     <div class="chords container">
-      <%= for chord <- @chords do %>
+      <%= for {_, chord} <- @chords do %>
         <div class="chord-selector row">
-          <div class="col-1"><%= Chord.pretty(chord.tonic) %></div>
-          <.build_selectors chord={chord}/>
+          <.form let={f} for={@changesets[chord.tonic]} phx-change="chord_change">
+            <%= label f, :tonic %>
+            <%= text_input f, chord.tonic, value: Chord.pretty(chord.tonic) %>
+            <.build_selectors chord={chord} form={f}}/>
+          </.form>
         </div>
       <% end %>
+      <div phx-click="add_chord">Add chord</div>
     </div>
     """
   end
 
-  defp default_chord() do
-    {:ok, chord} = Builder.build(:e, third: :min, fifth: :perfect)
-    chord
-  end
+  defp changeset(chord), do: Ecto.Changeset.change(chord, %{})
 
   defp build_selectors(assigns) do
-    chord = assigns.chord
-    intervals = Builder.get_intervals(chord)
-
+    intervals = Builder.get_intervals(assigns.chord)
     assigns = assign(assigns, :intervals, intervals)
 
     ~H"""
     <%= for {type, interval} <- @intervals do %>
       <div class="col-2">
-        <label><%= type %></label>
-        <.interval_selector type={type} selected={interval}/>
+        <%= label @form, type %>
+        <.interval_selector type={type} selected={interval} form={@form} chord={@chord}/>
       </div>
     <% end %>
     """
@@ -46,12 +46,13 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
     assigns = assign(assigns, :selections, selections)
 
     ~H"""
-    <%= select :chord, :chord, @selections, selected: @selected %>
+    <%= select @form, @type, @selections, selected: @selected %>
     """
   end
 
   defp selections_from_type(:third), do: ["maj", "min"]
-  defp selections_from_type(:fifth), do: ["diminished", "perfect", "augmented"]
+  # TODO: should add augmented in the future
+  defp selections_from_type(:fifth), do: ["diminished", "perfect"]
 
   # <select selected={@selected}>
   #   <%= for selection <- @selections do %>

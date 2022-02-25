@@ -41,6 +41,8 @@ defmodule GuitarNotes.Model.Chord do
     Enum.reject([chord.tonic, chord.third, chord.fifth], &is_nil/1)
   end
 
+  def existing_notes(), do: ["a", "as", "b", "c", "cs", "d", "ds", "e", "f", "fs", "g", "gs"]
+
   @pretty %{
     a: "A",
     as: "A#",

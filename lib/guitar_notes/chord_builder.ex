@@ -1,11 +1,24 @@
 defmodule GuitarNotes.ChordBuilder do
   alias GuitarNotes.Model.Chord
 
-  def build(tonic, opts \\ []) do
-    with {:ok, chord} <- Chord.new(tonic: tonic),
-         %Chord{} = chord <- Enum.reduce_while(opts, chord, &build_interval/2) do
+  def build(chord_or_tonic, opts \\ [])
+
+  def build(tonic, opts) when is_atom(tonic) do
+    with {:ok, chord} <- Chord.new(tonic: tonic) do
+      build(chord, opts)
+    end
+  end
+
+  def build(%Chord{} = chord, opts) do
+    opts = normalize_opts(opts)
+
+    with %Chord{} = chord <- Enum.reduce_while(opts, chord, &build_interval/2) do
       {:ok, chord}
     end
+  end
+
+  defp normalize_opts(opts) do
+    Map.new(opts, fn {k, v} -> {maybe_to_atom(k), maybe_to_atom(v)} end)
   end
 
   def calculate_interval(note, steps) when is_atom(note) and is_number(steps) do
@@ -36,11 +49,31 @@ defmodule GuitarNotes.ChordBuilder do
   end
 
   def interval(note1, note2) when is_atom(note1) and is_atom(note2) do
-    {:ok, number1} = note_to_number(note1)
-    {:ok, number2} = note_to_number(note2)
-
-    abs(number1 - number2) |> get_interval_notation()
+    note1 |> find_interval(note2) |> get_interval_notation()
   end
+
+  defp find_interval(note1, note2), do: find_interval(note1, note2, 0)
+
+  defp find_interval(note1, note2, distance) do
+    if next_note(note1) == note2 do
+      distance + 1
+    else
+      note1 |> next_note() |> find_interval(note2, distance + 1)
+    end
+  end
+
+  defp next_note(:c), do: :cs
+  defp next_note(:cs), do: :d
+  defp next_note(:d), do: :ds
+  defp next_note(:ds), do: :e
+  defp next_note(:e), do: :f
+  defp next_note(:f), do: :fs
+  defp next_note(:fs), do: :g
+  defp next_note(:g), do: :gs
+  defp next_note(:gs), do: :a
+  defp next_note(:a), do: :as
+  defp next_note(:as), do: :b
+  defp next_note(:b), do: :c
 
   # Private
   defp maybe_interval(_, nil), do: nil
@@ -58,6 +91,13 @@ defmodule GuitarNotes.ChordBuilder do
   defp build_interval(interval, _), do: {:halt, {:error, "Unknown interval #{inspect(interval)}"}}
 
   # TODO: complete all main intervals
+  defp get_interval(type, modifier) when is_binary(type) or is_binary(modifier) do
+    type = maybe_to_atom(type)
+    modifier = maybe_to_atom(modifier)
+
+    get_interval(type, modifier)
+  end
+
   defp get_interval(:third, :min), do: {:ok, 3}
   defp get_interval(:third, :maj), do: {:ok, 4}
   defp get_interval(:fifth, :diminished), do: {:ok, 6}
@@ -72,6 +112,9 @@ defmodule GuitarNotes.ChordBuilder do
   defp get_interval_notation(6), do: {:fifth, :diminished}
   defp get_interval_notation(7), do: {:fifth, :perfect}
   defp get_interval_notation(8), do: {:fifth, :augmented}
+
+  defp maybe_to_atom(atom) when is_atom(atom), do: atom
+  defp maybe_to_atom(str) when is_binary(str), do: String.to_existing_atom(str)
 
   @numbers_to_notes %{
     0 => :c,
