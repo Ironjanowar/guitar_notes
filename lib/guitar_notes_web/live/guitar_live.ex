@@ -27,8 +27,6 @@ defmodule GuitarNotesWeb.GuitarLive do
   end
 
   def handle_event("chord_change", params, socket) do
-    IO.inspect(params, label: "params")
-
     if valid_change?(params) do
       do_update_chord(params, socket)
     else
@@ -59,9 +57,6 @@ defmodule GuitarNotesWeb.GuitarLive do
 
     chord_notes = chords |> Enum.flat_map(fn {_, chord} -> Chord.notes(chord) end) |> Enum.uniq()
 
-    IO.inspect(chords, label: "chords")
-    IO.inspect(chord_notes, label: "chord_notes")
-
     {:noreply, assign(socket, chords: chords, chord_notes: chord_notes)}
   end
 
@@ -86,8 +81,6 @@ defmodule GuitarNotesWeb.GuitarLive do
   defp update_old_chord(params, chords) do
     # Pop old chord
     {old_tonic, old_tonic_str} = get_old_tonic(params["_target"])
-    IO.inspect(old_tonic, label: "old_tonic")
-    IO.inspect(old_tonic_str, label: "old_tonic_str")
     {old_chord, chords} = Map.pop(chords, old_tonic)
 
     # Update old chord
