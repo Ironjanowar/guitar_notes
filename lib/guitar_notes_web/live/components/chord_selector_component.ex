@@ -51,8 +51,7 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
   end
 
   defp selections_from_type(:third), do: ["maj", "min"]
-  # TODO: should add augmented in the future
-  defp selections_from_type(:fifth), do: ["diminished", "perfect"]
+  defp selections_from_type(:fifth), do: ["diminished", "perfect", "augmented"]
 
   # <select selected={@selected}>
   #   <%= for selection <- @selections do %>
