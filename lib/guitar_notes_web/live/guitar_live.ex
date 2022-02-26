@@ -35,7 +35,17 @@ defmodule GuitarNotesWeb.GuitarLive do
   end
 
   def handle_event("add_chord", _params, socket) do
-    {:noreply, socket}
+    chords = socket.assigns.chords
+    current_notes = Enum.map(chords, fn {note, _} -> to_string(note) end)
+    available_notes = @notes -- current_notes
+
+    new_note = Enum.random(available_notes) |> String.to_existing_atom()
+
+    {:ok, chord} = Builder.build(new_note, third: :maj, fifth: :perfect)
+    chords = Map.put(chords, new_note, chord)
+    chord_notes = chords |> Enum.flat_map(fn {_, chord} -> Chord.notes(chord) end) |> Enum.uniq()
+
+    {:noreply, assign(socket, chord_notes: chord_notes, chords: chords)}
   end
 
   def handle_event("nothing", _params, socket) do

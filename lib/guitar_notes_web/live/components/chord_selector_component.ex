@@ -13,14 +13,20 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
     <div class="chords container">
       <%= for {_, chord} <- @chords do %>
         <div class="chord-selector row">
-          <.form let={f} for={@changesets[chord.tonic]} phx-change="chord_change" phx-submit="nothing">
-            <%= label f, :tonic %>
-            <%= text_input f, chord.tonic, value: Chord.pretty(chord.tonic), phx: [debounce: "blur"] %>
-            <.build_selectors chord={chord} form={f}}/>
+          <.form let={f} for={@changesets[chord.tonic]} phx-change="chord_change" phx-submit="nothing" class="form-control">
+            <div class="col-xs-2">
+              <%= label f, :tonic %>
+              <%= text_input f, chord.tonic, value: Chord.pretty(chord.tonic), phx: [debounce: "blur"], class: "form-control" %>
+            </div>
+            <div class="col-xs-8">
+              <.build_selectors chord={chord} form={f}}/>
+            </div>
           </.form>
         </div>
       <% end %>
-      <div phx-click="add_chord">Add chord</div>
+      <div class="row">
+        <button class="btn btn-primary" phx-click="add_chord">Add chord</button>
+      </div>
     </div>
     """
   end
@@ -33,7 +39,7 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
 
     ~H"""
     <%= for {type, interval} <- @intervals do %>
-      <div class="col-2">
+      <div class="col-xs-2">
         <%= label @form, type %>
         <.interval_selector type={type} selected={interval} form={@form} chord={@chord}/>
       </div>
@@ -46,12 +52,14 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
     assigns = assign(assigns, :selections, selections)
 
     ~H"""
-    <%= select @form, @type, @selections, selected: @selected %>
+    <%= select @form, @type, @selections, selected: @selected, class: "custom-select" %>
     """
   end
 
-  defp selections_from_type(:third), do: ["maj", "min"]
-  defp selections_from_type(:fifth), do: ["diminished", "perfect", "augmented"]
+  defp selections_from_type(:third), do: [Maj: "maj", Min: "min"]
+
+  defp selections_from_type(:fifth),
+    do: [Diminished: "diminished", Perfect: "perfect", Augmented: "augmented"]
 
   # <select selected={@selected}>
   #   <%= for selection <- @selections do %>
