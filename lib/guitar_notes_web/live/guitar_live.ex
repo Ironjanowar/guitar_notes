@@ -38,6 +38,10 @@ defmodule GuitarNotesWeb.GuitarLive do
     {:noreply, socket}
   end
 
+  def handle_event("nothing", _params, socket) do
+    {:noreply, socket}
+  end
+
   defp valid_change?(%{"chord" => changes}) do
     Enum.all?(changes, fn
       {note, ""} when note in @notes -> false
