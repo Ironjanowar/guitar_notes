@@ -1,19 +1,9 @@
 # GuitarNotes
 
-To start your Phoenix server:
+## Why?
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+I just wanted to practice LiveView and I had the idea of visualizing all the notes in a guitar fretboard, so...
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## How it looks
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+[web](./images/guitar_notes.png)
