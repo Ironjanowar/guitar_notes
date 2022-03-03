@@ -6,4 +6,4 @@ I just wanted to practice LiveView and I had the idea of visualizing all the not
 
 ## How it looks
 
-[web](./images/guitar_notes.png)
+![web](./images/guitar_notes.png)
