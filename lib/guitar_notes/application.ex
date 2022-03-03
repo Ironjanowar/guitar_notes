@@ -9,7 +9,7 @@ defmodule GuitarNotes.Application do
   def start(_type, _args) do
     children = [
       # Start the Ecto repository
-      GuitarNotes.Repo,
+      # GuitarNotes.Repo,
       # Start the Telemetry supervisor
       GuitarNotesWeb.Telemetry,
       # Start the PubSub system
