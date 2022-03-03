@@ -21,9 +21,16 @@ defmodule GuitarNotesWeb.GuitarLive do
     {:ok, chord} = Builder.build(:e, third: :min, fifth: :perfect)
     chords = [chord]
     chord_notes = chords |> Enum.flat_map(&Chord.notes/1) |> Enum.uniq()
+    chords_order = Enum.map(chords, & &1.tonic)
     chords = Map.new(chords, &{&1.tonic, &1})
 
-    {:ok, assign(socket, configs: configs, chord_notes: chord_notes, chords: chords)}
+    {:ok,
+     assign(socket,
+       configs: configs,
+       chord_notes: chord_notes,
+       chords: chords,
+       chords_order: chords_order
+     )}
   end
 
   def handle_event("chord_change", params, socket) do
@@ -44,8 +51,10 @@ defmodule GuitarNotesWeb.GuitarLive do
     {:ok, chord} = Builder.build(new_note, third: :maj, fifth: :perfect)
     chords = Map.put(chords, new_note, chord)
     chord_notes = chords |> Enum.flat_map(fn {_, chord} -> Chord.notes(chord) end) |> Enum.uniq()
+    chords_order = socket.assigns.chords_order ++ [new_note]
 
-    {:noreply, assign(socket, chord_notes: chord_notes, chords: chords)}
+    {:noreply,
+     assign(socket, chord_notes: chord_notes, chords: chords, chords_order: chords_order)}
   end
 
   def handle_event("nothing", _params, socket) do
@@ -62,6 +71,9 @@ defmodule GuitarNotesWeb.GuitarLive do
   defp do_update_chord(params, socket) do
     chords = socket.assigns.chords
 
+    {old_tonic, old_tonic_str} = get_old_tonic(params["_target"])
+    new_tonic = params["chord"][old_tonic_str] |> String.downcase() |> String.to_existing_atom()
+
     chords =
       if update_chord?(params["_target"]) do
         update_old_chord(params, chords)
@@ -71,7 +83,17 @@ defmodule GuitarNotesWeb.GuitarLive do
 
     chord_notes = chords |> Enum.flat_map(fn {_, chord} -> Chord.notes(chord) end) |> Enum.uniq()
 
-    {:noreply, assign(socket, chords: chords, chord_notes: chord_notes)}
+    chords_order =
+      Enum.map(socket.assigns.chords_order, fn note ->
+        if note == old_tonic do
+          new_tonic
+        else
+          note
+        end
+      end)
+
+    {:noreply,
+     assign(socket, chords: chords, chord_notes: chord_notes, chords_order: chords_order)}
   end
 
   defp update_chord?([_, tonic]) when tonic in @notes, do: true

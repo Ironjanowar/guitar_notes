@@ -11,15 +11,15 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
 
     ~H"""
     <div class="chords container">
-      <%= for {_, chord} <- @chords do %>
+      <%= for tonic <- @chords_order do %>
         <div class="chord-selector row">
-          <.form let={f} for={@changesets[chord.tonic]} phx-change="chord_change" phx-submit="nothing" class="form-control">
+          <.form let={f} for={@changesets[tonic]} phx-change="chord_change" phx-submit="nothing" class="form-control">
             <div class="col-xs-2">
               <%= label f, :tonic %>
-              <%= text_input f, chord.tonic, value: Chord.pretty(chord.tonic), phx: [debounce: "blur"], class: "form-control" %>
+              <%= text_input f, tonic, value: Chord.pretty(tonic), phx: [debounce: "blur"], class: "form-control" %>
             </div>
             <div class="col-xs-8">
-              <.build_selectors chord={chord} form={f}}/>
+              <.build_selectors chord={@chords[tonic]} form={f}}/>
             </div>
           </.form>
         </div>
