@@ -29,7 +29,8 @@ defmodule GuitarNotesWeb.GuitarLive do
        configs: configs,
        chord_notes: chord_notes,
        chords: chords,
-       chords_order: chords_order
+       chords_order: chords_order,
+       add_chord_enabled?: true
      )}
   end
 
@@ -46,15 +47,45 @@ defmodule GuitarNotesWeb.GuitarLive do
     current_notes = Enum.map(chords, fn {note, _} -> to_string(note) end)
     available_notes = @notes -- current_notes
 
-    new_note = Enum.random(available_notes) |> String.to_existing_atom()
+    if available_notes == [] do
+      {:noreply, assign(socket, :add_chord_enabled?, false)}
+    else
+      new_note = Enum.random(available_notes) |> String.to_existing_atom()
 
-    {:ok, chord} = Builder.build(new_note, third: :maj, fifth: :perfect)
-    chords = Map.put(chords, new_note, chord)
+      {:ok, chord} = Builder.build(new_note, third: :maj, fifth: :perfect)
+      chords = Map.put(chords, new_note, chord)
+
+      chord_notes =
+        chords |> Enum.flat_map(fn {_, chord} -> Chord.notes(chord) end) |> Enum.uniq()
+
+      chords_order = socket.assigns.chords_order ++ [new_note]
+      current_notes = Enum.map(chords_order, &to_string/1)
+      available_notes = @notes -- current_notes
+      add_chord_enabled? = available_notes != []
+
+      {:noreply,
+       assign(socket,
+         chord_notes: chord_notes,
+         chords: chords,
+         chords_order: chords_order,
+         add_chord_enabled?: add_chord_enabled?
+       )}
+    end
+  end
+
+  def handle_event("remove_chord", params, socket) do
+    tonic = String.to_existing_atom(params["tonic"])
+    {_, chords} = Map.pop(socket.assigns.chords, tonic)
     chord_notes = chords |> Enum.flat_map(fn {_, chord} -> Chord.notes(chord) end) |> Enum.uniq()
-    chords_order = socket.assigns.chords_order ++ [new_note]
+    chords_order = Enum.reject(socket.assigns.chords_order, &(&1 == tonic))
 
     {:noreply,
-     assign(socket, chord_notes: chord_notes, chords: chords, chords_order: chords_order)}
+     assign(socket,
+       chord_notes: chord_notes,
+       chords: chords,
+       chords_order: chords_order,
+       add_chord_enabled?: true
+     )}
   end
 
   def handle_event("nothing", _params, socket) do

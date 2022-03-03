@@ -14,6 +14,7 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
       <%= for tonic <- @chords_order do %>
         <div class="chord-selector row">
           <.form let={f} for={@changesets[tonic]} phx-change="chord_change" phx-submit="nothing" class="form-control">
+            <button class="btn btn-danger bin-button" phx-click="remove_chord" phx-value-tonic={tonic}><i class="fa fa-trash-o"></i></button>
             <div class="col-xs-2">
               <%= label f, :tonic %>
               <%= text_input f, tonic, value: Chord.pretty(tonic), phx: [debounce: "blur"], class: "form-control" %>
@@ -25,7 +26,9 @@ defmodule GuitarNotesWeb.Components.ChordSelectorComponent do
         </div>
       <% end %>
       <div class="row">
-        <button class="btn btn-primary" phx-click="add_chord">Add chord</button>
+        <%= if @add_chord_enabled? do %>
+          <button class="btn btn-primary" phx-click="add_chord">Add chord</button>
+        <% end %>
       </div>
     </div>
     """
