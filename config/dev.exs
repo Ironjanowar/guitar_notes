@@ -22,11 +22,12 @@ config :guitar_notes, GuitarNotesWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "kkKkDuFocj8mE03R2CSOslbnExSW7ZR2UodnH58MnqPR17FEYBXlfLZ3zIG7CmXw",
-  watchers: [
-    # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
-  ]
+  secret_key_base: "kkKkDuFocj8mE03R2CSOslbnExSW7ZR2UodnH58MnqPR17FEYBXlfLZ3zIG7CmXw"
+
+# watchers: [
+#   # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
+#   esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+# ]
 
 # ## SSL Support
 #
@@ -53,15 +54,15 @@ config :guitar_notes, GuitarNotesWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :guitar_notes, GuitarNotesWeb.Endpoint,
-  live_reload: [
-    patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/guitar_notes_web/(live|views)/.*(ex)$",
-      ~r"lib/guitar_notes_web/templates/.*(eex)$"
-    ]
-  ]
+# config :guitar_notes, GuitarNotesWeb.Endpoint,
+#   live_reload: [
+#     patterns: [
+#       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+#       ~r"priv/gettext/.*(po)$",
+#       ~r"lib/guitar_notes_web/(live|views)/.*(ex)$",
+#       ~r"lib/guitar_notes_web/templates/.*(eex)$"
+#     ]
+#   ]
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
